@@ -2,14 +2,21 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for, send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_migrate import Migrate
-from flask_swagger import swagger
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from sqlalchemy import select
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, User
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_sqlalchemy import SQLAlchemy
+
+
+
+
 
 # from models import Person
 
@@ -17,7 +24,19 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
+
+
 app.url_map.strict_slashes = False
+
+# CORS
+#CORS(app, origins=[os.getenv("VITE_BACKEND_URL"), os.getenv("VITE_BACKEND_URL")+"/api/signup"], methods=["GET", "POST", "OPTIONS"], allow_headers="*")
+#print("CORS origin:", os.getenv("VITE_BACKEND_URL"))
+# JWT configuration
+app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")  # ¡Cambia las palabras "super-secret" por otra cosa!
+app.config["JWT_TOKEN_LOCATION"] = ["headers"]
+app.config["JWT_HEADER_NAME"] = "Authorization"
+app.config["JWT_HEADER_TYPE"] = "Bearer"
+jwt = JWTManager(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -64,6 +83,7 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0  # avoid cache memory
     return response
+
 
 
 # this only runs if `$ python src/main.py` is executed
