@@ -9,6 +9,7 @@ export const Private = () => {
 
     const { isLogged, setIsLogged } = useGlobalReducer();
     const [hidden_msg, setHiddenMsg] = useState("")
+    const navigate = useNavigate();
     
     
     useEffect(() => {
@@ -19,7 +20,10 @@ export const Private = () => {
             getPrivate();
         } else {
             setIsLogged(false);
+            navigate("/login"); 
+
         }
+        return () => clearTimeout(timer);
     }, []);
 
     if (isLogged) {
