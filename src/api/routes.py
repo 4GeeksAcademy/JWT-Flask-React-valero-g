@@ -76,7 +76,7 @@ def get_token():
         # checking password
         result = bcrypt.checkpw(userBytes,user_pass)
         if (result):
-            access_token = create_access_token(identity=user.id)
+            access_token = create_access_token(identity=str(user.id))
             return jsonify({ "token": access_token, "user_id": user.id }) 
         else:
             return {"message":"Wrong email or password"}, 400
@@ -95,11 +95,11 @@ def get_hiddden_message():
         user = db.session.execute(select(User).where(User.id == current_id)).first()
         # Validacion de user
         if (user != None):
-                response_body = {
-                    "message": "Este es el super mensaje secreto que viene de las profundiddes de la API"
-                }
-
-        return jsonify(response_body), 200
+            response_body = {"message": "Este es el super mensaje secreto que viene de la API tras autentificarse con TOKEN"}
+            return jsonify(response_body), 200
+        else:
+            return {"message":"No access to secret message"}, 400
+    
     except Exception as e:
         print("Error in /private route:", e)
         return {"message":"Unable to complete operation"}, 404

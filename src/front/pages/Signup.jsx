@@ -8,6 +8,7 @@ export const Signup = () => {
     const [email, setEmail] = useState("");
     const [pass, setPassword] = useState("");
     const [sucessRegister, setSuccesRegister] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
 
     const contact = {
@@ -37,9 +38,16 @@ export const Signup = () => {
             setSuccesRegister(true);
         }
         else {
-            console.log('error: ', response.status, response.statusText);
-            /* Realiza el tratamiento del error que devolvió el request HTTP */
-            return { error: { status: response.status, statusText: response.statusText } };
+                if (response.status == 400 && data.message =="User already exists") {
+                    setErrorMessage("User already exists");
+                    console.log(data);
+                }else{
+                    console.log('error: ', response.status, response.statusText);
+                    setErrorMessage("Unable to register user");
+                    /* Realiza el tratamiento del error que devolvió el request HTTP */
+                    return { error: { status: response.status, statusText: response.statusText } };
+                    
+                }
         }
     }
 
@@ -60,6 +68,7 @@ export const Signup = () => {
                         <input type="password" className="form-control" onChange={(e) => setPassword(e.target.value)} id="exampleInputPassword1" />
                     </div>
                     <button type="submit" className="btn btn-primary">Submit</button>
+                    <p className= "text-danger">{errorMessage != "" ? errorMessage : ""}</p>
                 </form>
             </div>
         )

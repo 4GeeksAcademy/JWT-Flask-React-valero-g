@@ -12,15 +12,16 @@ export const Private = () => {
     const navigate = useNavigate();
     
     
+    
     useEffect(() => {
         const token = localStorage.getItem("jwt-token");
-
+        let timer = 0;
         if (token) {
             setIsLogged(true);
             getPrivate();
         } else {
             setIsLogged(false);
-            navigate("/login"); 
+            timer = setTimeout(() => navigate("/login"),3000);
 
         }
         return () => clearTimeout(timer);
@@ -38,7 +39,7 @@ export const Private = () => {
                         <button type="button" className="list-group-item list-group-item-action" >Menu Privado 5</button>
                     </div>
                     <div>
-                        <h3>The secret message from back end is ... (TBC) I get a 422 error when doing a GET with token {hidden_msg}</h3>
+                        <h3>The secret message from back end is ... {hidden_msg}</h3>
                     </div>
                 </div>
             );
@@ -46,7 +47,7 @@ export const Private = () => {
     else{
         return(
             <div className= "container">
-                <h1>Access forbidden!!!</h1>
+                <h1>Access forbidden!!! Please log-in</h1>
             </div>
         )
     }
